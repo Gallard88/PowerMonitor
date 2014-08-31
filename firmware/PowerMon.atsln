@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "PowerMon", "PowerMon\PowerMon.cproj", "{2B1BDBF7-0BA3-44A8-B99E-7D5458C7F69A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Release|ARM = Release|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2B1BDBF7-0BA3-44A8-B99E-7D5458C7F69A}.Debug|ARM.ActiveCfg = Debug|ARM
+		{2B1BDBF7-0BA3-44A8-B99E-7D5458C7F69A}.Debug|ARM.Build.0 = Debug|ARM
+		{2B1BDBF7-0BA3-44A8-B99E-7D5458C7F69A}.Release|ARM.ActiveCfg = Release|ARM
+		{2B1BDBF7-0BA3-44A8-B99E-7D5458C7F69A}.Release|ARM.Build.0 = Release|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

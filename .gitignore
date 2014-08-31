@@ -7,6 +7,16 @@
 # Libraries
 *.lib
 *.a
+*.d
+*.o
+*.bin
+*.eep
+*.lss
+*.map
+*.log
+*.config
+*.srec
+
 
 # Shared objects (inc. Windows DLLs)
 *.dll
