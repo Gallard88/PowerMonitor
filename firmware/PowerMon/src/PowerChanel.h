@@ -20,6 +20,10 @@ uint32_t PowerChan_GetVoltsRaw(PowerChanel_Ptr ptr);
 
 int32_t PowerChan_GetCurrent(PowerChanel_Ptr ptr);
 
+void PowerChan_SetVoltCalib(PowerChanel_Ptr ptr, uint32_t factor);
+uint32_t PowerChan_GetVoltCalib(PowerChanel_Ptr ptr);
+
+
 //*****************************************************************************
 //*****************************************************************************
 #ifdef __cplusplus

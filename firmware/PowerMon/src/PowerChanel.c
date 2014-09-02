@@ -9,9 +9,7 @@ struct PowerChanel
 {
   AD7787_Ptr adc;
   uint32_t volts;
-  int32_t current;
-  int32_t curr_offset;
-  unsigned poll_volt:1;
+  uint32_t v_calib;
 };
 #define CALIBRATION_CONSTANT  512
 
@@ -22,31 +20,35 @@ PowerChanel_Ptr PowerChan_Init(Spi *p_spi, uint32_t cs_pin, struct spi_device *d
 	if ( ptr != NULL ) {
 		ptr->adc = AD7787_Init(p_spi, cs_pin, device);		
 		ptr->volts = 0;
-		ptr->current = 0;
-		ptr->poll_volt = 0;
-		ptr->curr_offset = 0x800A;
+		ptr->v_calib = 1;
 	}
 	return ptr;	
 }
 
 //*****************************************************************************
+//*****************************************************************************
+void PowerChan_SetVoltCalib(PowerChanel_Ptr ptr, uint32_t factor)
+{
+	ptr->v_calib = factor;
+}
+
+/* ========================================================================= */
+uint32_t PowerChan_GetVoltCalib(PowerChanel_Ptr ptr)
+{
+	return ptr->v_calib;
+}
+
+//*****************************************************************************
+//*****************************************************************************
 void PowerChan_Run(PowerChanel_Ptr ptr)
 {
-//	uint32_t value;
-//	if ( ptr->poll_volt == 1 ) {
-//		ptr->poll_volt = 0;
-		ptr->volts   = AD7787_Run(ptr->adc, AD_CH_2) / 256;
-//	} else {
-//		ptr->poll_volt = 1;		
-//		value = AD7787_Run(ptr->adc, AD_CH_1) / 256;
-//		ptr->current = value - ptr->curr_offset;
-//	}
+	ptr->volts = AD7787_Run(ptr->adc, AD_CH_2) / 256;
 }
 
 //*****************************************************************************
 uint32_t PowerChan_GetVolts(PowerChanel_Ptr ptr)
 {
-	return (ptr->volts * 428) / 2048;
+	return (ptr->volts * ptr->v_calib) / 4096;
 }
 
 //*****************************************************************************
@@ -58,7 +60,8 @@ uint32_t PowerChan_GetVoltsRaw(PowerChanel_Ptr ptr)
 //*****************************************************************************
 int32_t PowerChan_GetCurrent(PowerChanel_Ptr ptr)
 {
-	return (ptr->current / 4096);
+//	return (ptr->current / 4096);
+	return 0;
 }
 
 //*****************************************************************************

@@ -102,6 +102,7 @@ static int Cmd_Voltage(const char *argument, CmdResponse *resp)
 static int Cmd_VoltageRaw(const char *argument, CmdResponse *resp)
 {
 	uint8_t ch;
+	uint32_t v;
 	
 	argument = CP_SkipSpace(argument);
 
@@ -113,7 +114,8 @@ static int Cmd_VoltageRaw(const char *argument, CmdResponse *resp)
 		return -1;
 	}
 	
-	sprintf(resp->buffer,"Voltage %s: %08lX\r\n", (ch == 2)?"Sec":"Pri", PowerChan_GetVoltsRaw((ch==2)?Sec_CH:Pri_CH));
+	v = PowerChan_GetVoltsRaw((ch==2)?Sec_CH:Pri_CH);
+	sprintf(resp->buffer,"Voltage %s: %08lX, %ld\r\n", (ch == 2)?"Sec":"Pri", v, v);
 	return 0;
 }
 
@@ -147,22 +149,22 @@ static int Cmd_Restart(const char *argument, CmdResponse *resp)
 /* ============================================= */
 static uint32_t Read_PowerCH_VoltCalibration(uint8_t ch)
 {	
-	uint32_t value;
-	value = ~EE_Read4((ch==1)? EE_CH_1_VOLT: EE_CH_2_VOLT);
-	if ( value == 0 ) {
-		value = 107;
-	}
-	return value;	
+	return EE_Read4_Default((ch==1)? EE_CH_1_VOLT: EE_CH_2_VOLT, 856);
 }
 
 /* ============================================= */
-static int  Check_Volt_Calib(const char *argument, CmdResponse *resp)
+static void Write_PowerCH_VoltCalibration(uint8_t ch ,uint32_t v)
+{	
+	EE_Write4((ch==1)? EE_CH_1_VOLT: EE_CH_2_VOLT, v);
+}
+
+/* ============================================= */
+static int Cmd_VoltCalib(const char *argument, CmdResponse *resp)
 {
 	uint8_t ch;
 	uint32_t v;
 	
-	argument = CP_SkipSpace(argument);
-
+	argument = CP_SkipSpace(argument);	
 	if ( strncmp("sec", argument, 3) == 0 ) {
 		ch = 2;
 	} else if ( strncmp("pri", argument, 3) == 0) {
@@ -170,19 +172,21 @@ static int  Check_Volt_Calib(const char *argument, CmdResponse *resp)
 	} else  {
 		return -1;
 	}
-	
-	v = Read_PowerCH_VoltCalibration(ch);
-	sprintf(resp->buffer,"Calib %s: %08lX, %ld\r\n", (ch == 2)?"Sec":"Pri", v, v);
-	return 0;	
-}
+	argument = CP_SkipChars(argument);	
+	argument = CP_SkipSpace(argument);	
+	if ( *argument ) {
+		UartBuffer_PutString("More\r\n");
+		v = atol(argument);
+		Write_PowerCH_VoltCalibration(ch, v);
+		sprintf(resp->buffer,"Calib %lu\r\n", v);
+		UartBuffer_PutString(resp->buffer);
+	} else {
+		
+	}
 
-/* ============================================= */
-static int  Cmd_Inc(const char *argument, CmdResponse *resp)
-{
-	uint8_t value = EE_Read1(1);
+	v = Read_PowerCH_VoltCalibration(ch);
+	sprintf(resp->buffer,"Calib %s: %lu\r\n", (ch == 2)?"Sec":"Pri", v);
 	
-	sprintf(resp->buffer,"Value: %d\r\n", value);
-	EE_Write1(1, value+1);
 	return 0;	
 }
 
@@ -194,9 +198,8 @@ static const CmdTable SystemCommands[] = {
 	{ "volt",		Cmd_Voltage			},
 	{ "raw",		Cmd_VoltageRaw		},
 	{ "craw",		Cmd_CurrentRaw		},
-	{ "calib",		Check_Volt_Calib	},
+	{ "calib",		Cmd_VoltCalib	},
 	{ "ver",		Cmd_Version			},
-	{ "inc",		Cmd_Inc				},
 	{ NULL,			NULL				}
 };
 
@@ -264,7 +267,9 @@ int main (void)
 	
 	DataFlash_Init(SPI, PIO_PA17);
 	Pri_CH = PowerChan_Init(SPI, PIO_PA16, &SPI_DEVICE_EXAMPLE);
+	PowerChan_SetVoltCalib(Pri_CH, Read_PowerCH_VoltCalibration(1));
 	Sec_CH = PowerChan_Init(SPI, PIO_PA15, &SPI_DEVICE_EXAMPLE);
+	PowerChan_SetVoltCalib(Sec_CH, Read_PowerCH_VoltCalibration(2));
 
 	DFS_ReadChipID();
 	EE_Init( &EE_Token, 4);
