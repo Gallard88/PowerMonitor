@@ -468,6 +468,9 @@
     <Compile Include="src\CmdProcessor.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\config\conf_eeprom.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\config\conf_spi_master.h">
       <SubType>compile</SubType>
     </Compile>

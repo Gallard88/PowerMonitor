@@ -36,6 +36,7 @@
 #include "PowerChanel.h"
 #include "Run.h"
 #include "eeprom.h"
+#include "conf_eeprom.h"
 
 
 #define BOARD_ID_USART             ID_USART0
@@ -144,15 +145,59 @@ static int Cmd_Restart(const char *argument, CmdResponse *resp)
 }
 
 /* ============================================= */
+static uint32_t Read_PowerCH_VoltCalibration(uint8_t ch)
+{	
+	uint32_t value;
+	value = ~EE_Read4((ch==1)? EE_CH_1_VOLT: EE_CH_2_VOLT);
+	if ( value == 0 ) {
+		value = 107;
+	}
+	return value;	
+}
+
+/* ============================================= */
+static int  Check_Volt_Calib(const char *argument, CmdResponse *resp)
+{
+	uint8_t ch;
+	uint32_t v;
+	
+	argument = CP_SkipSpace(argument);
+
+	if ( strncmp("sec", argument, 3) == 0 ) {
+		ch = 2;
+	} else if ( strncmp("pri", argument, 3) == 0) {
+		ch = 1;
+	} else  {
+		return -1;
+	}
+	
+	v = Read_PowerCH_VoltCalibration(ch);
+	sprintf(resp->buffer,"Calib %s: %08lX, %ld\r\n", (ch == 2)?"Sec":"Pri", v, v);
+	return 0;	
+}
+
+/* ============================================= */
+static int  Cmd_Inc(const char *argument, CmdResponse *resp)
+{
+	uint8_t value = EE_Read1(1);
+	
+	sprintf(resp->buffer,"Value: %d\r\n", value);
+	EE_Write1(1, value+1);
+	return 0;	
+}
+
+/* ============================================= */
 /* ============================================= */
 static const CmdTable SystemCommands[] = {
-	{ "restart",	Cmd_Restart		},
-	{ "current",	Cmd_Current		},
-	{ "volt",		Cmd_Voltage		},
-	{ "raw",		Cmd_VoltageRaw	},
-	{ "craw",		Cmd_CurrentRaw	},
-	{ "ver",		Cmd_Version		},
-	{ NULL,			NULL			}
+	{ "restart",	Cmd_Restart			},
+	{ "current",	Cmd_Current			},
+	{ "volt",		Cmd_Voltage			},
+	{ "raw",		Cmd_VoltageRaw		},
+	{ "craw",		Cmd_CurrentRaw		},
+	{ "calib",		Check_Volt_Calib	},
+	{ "ver",		Cmd_Version			},
+	{ "inc",		Cmd_Inc				},
+	{ NULL,			NULL				}
 };
 
 /* ============================================= */
