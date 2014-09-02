@@ -115,17 +115,18 @@ static int IsFlashReady (void)
 }
 
 //*****************************************************************************
-void DFS_ReadChipID(void)
+uint8_t DFS_ReadChipID(void)
 {
-	uint8_t data1, data2;
+	uint8_t data;
 	while ( !IsFlashReady() )
 		;
 
 	CS_On();
 	spi_transfer(DF_Spi, DEVICE_ID_READ);
-	data1 = spi_transfer(DF_Spi, 0);
-	data2 = spi_transfer(DF_Spi, 0);
+	spi_transfer(DF_Spi, 0);
+	data = spi_transfer(DF_Spi, 0);
 	CS_Off();
+	return data;
 }
 
 //*****************************************************************************

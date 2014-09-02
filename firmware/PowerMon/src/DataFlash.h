@@ -37,7 +37,7 @@ void DFS_WriteBufferToFlash(const DF_Token *tk, uint16_t page, DF_Buff whichbuf)
 void DFS_BufferRead  (const DF_Token *tk, uint16_t page, uint16_t offset, uint16_t size, DF_Buff whichbuf, uint8_t *dest);
 void DFS_BufferWrite (const DF_Token *tk, uint16_t page, uint16_t offset, uint16_t size, DF_Buff whichbuf, const uint8_t *src);
 
-void DFS_ReadChipID(void);
+uint8_t DFS_ReadChipID(void);
 
 
 #define FLASH_DEVID_321		0x27	// values read from chip ID register
