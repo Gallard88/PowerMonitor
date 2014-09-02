@@ -240,7 +240,7 @@ void EE_Write2 (uint32_t addr, uint16_t data)
 void EE_Write4 (uint32_t addr, uint32_t data)
 {
   EE_Write2(addr,   data);
-  EE_Write2(addr+2, data > 16);
+  EE_Write2(addr+2, data / 65536);
 }
 
 // -----------------------------------------------------
