@@ -174,19 +174,15 @@ static int Cmd_VoltCalib(const char *argument, CmdResponse *resp)
 	}
 	argument = CP_SkipChars(argument);	
 	argument = CP_SkipSpace(argument);	
+
 	if ( *argument ) {
-		UartBuffer_PutString("More\r\n");
 		v = atol(argument);
 		Write_PowerCH_VoltCalibration(ch, v);
-		sprintf(resp->buffer,"Calib %lu\r\n", v);
-		UartBuffer_PutString(resp->buffer);
-	} else {
-		
-	}
-
-	v = Read_PowerCH_VoltCalibration(ch);
-	sprintf(resp->buffer,"Calib %s: %lu\r\n", (ch == 2)?"Sec":"Pri", v);
+		PowerChan_SetVoltCalib((ch==1)? Pri_CH: Sec_CH, v);
+	} 
 	
+	v = Read_PowerCH_VoltCalibration(ch);
+	sprintf(resp->buffer,"Calib %s: %lu\r\n", (ch == 2)?"Sec":"Pri", v);	
 	return 0;	
 }
 
@@ -198,7 +194,7 @@ static const CmdTable SystemCommands[] = {
 	{ "volt",		Cmd_Voltage			},
 	{ "raw",		Cmd_VoltageRaw		},
 	{ "craw",		Cmd_CurrentRaw		},
-	{ "calib",		Cmd_VoltCalib	},
+	{ "calib",		Cmd_VoltCalib		},
 	{ "ver",		Cmd_Version			},
 	{ NULL,			NULL				}
 };
