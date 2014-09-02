@@ -16,6 +16,7 @@
 *.log
 *.config
 *.srec
+*.atsuo
 
 
 # Shared objects (inc. Windows DLLs)
