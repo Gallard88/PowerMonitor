@@ -86,9 +86,9 @@ static int Cmd_Voltage(const char *argument, CmdResponse *resp)
 	argument = CP_SkipSpace(argument);
 
 	if ( strncmp("sec", argument, 3) == 0 )
-	ch = 2;
+		ch = 2;
 	else if ( strncmp("pri", argument, 3) == 0)
-	ch = 1;
+		ch = 1;
 	else  {
 		return -1;
 	}
@@ -105,9 +105,9 @@ static int Cmd_VoltageRaw(const char *argument, CmdResponse *resp)
 	argument = CP_SkipSpace(argument);
 
 	if ( strncmp("sec", argument, 3) == 0 )
-	ch = 2;
+		ch = 2;
 	else if ( strncmp("pri", argument, 3) == 0)
-	ch = 1;
+		ch = 1;
 	else  {
 		return -1;
 	}
@@ -124,9 +124,9 @@ static int Cmd_CurrentRaw(const char *argument, CmdResponse *resp)
 	argument = CP_SkipSpace(argument);
 
 	if ( strncmp("sec", argument, 3) == 0 )
-	ch = 2;
+		ch = 2;
 	else if ( strncmp("pri", argument, 3) == 0)
-	ch = 1;
+		ch = 1;
 	else  {
 		return -1;
 	}
@@ -206,17 +206,7 @@ int main (void)
 	board_init();
 	
 	delay_init(SystemCoreClock );
-	wdt_restart( WDT);
-	delay_s(1);
-	wdt_restart( WDT);
-	delay_s(1);
-	wdt_restart( WDT);
-	delay_s(1);
-	wdt_restart( WDT);
-	delay_s(1);
-	wdt_restart( WDT);
-	delay_s(1);
-	
+
 	Resp.buffer = RespBuf;
 	Resp.length = sizeof(RespBuf);	
 	
@@ -242,6 +232,9 @@ int main (void)
 								// keep this here until it does.
 		Run_Config();
 		
+		if ( Is_10ms() ) {
+			EE_Cache_Check();			
+		}
 		if ( Is_1s() ) 	{
 			wdt_restart( WDT);
 			PowerChan_Run(Pri_CH);
