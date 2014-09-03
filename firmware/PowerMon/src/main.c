@@ -56,7 +56,7 @@ const DF_Token EE_Token = { 0, 4};
 /* ============================================= */
 static int Cmd_Version(const char *argument, CmdResponse *resp)
 {
-	strcpy(resp->buffer,"Ver: Power Monitor V0.1 "__DATE__" "__TIME__"\r\n");
+	strcpy(resp->buffer,"Ver: Power Monitor Rev0, V0.1, "__DATE__" "__TIME__"\r\n");
 	return 0;
 }
 
@@ -182,7 +182,48 @@ static int Cmd_VoltCalib(const char *argument, CmdResponse *resp)
 	} 
 	
 	v = Read_PowerCH_VoltCalibration(ch);
-	sprintf(resp->buffer,"Calib %s: %lu\r\n", (ch == 2)?"Sec":"Pri", v);	
+	sprintf(resp->buffer,"Volt Calib %s: %lu\r\n", (ch == 2)?"Sec":"Pri", v);	
+	return 0;	
+}
+
+/* ============================================= */
+/* ============================================= */
+static int32_t Read_PowerCH_VoltOffset(uint8_t ch)
+{	
+	return EE_Read4_Default((ch==1)? EE_CH_1_VOLT_OFFSET: EE_CH_2_VOLT_OFFSET, 1);
+}
+
+/* ============================================= */
+static void Write_PowerCH_VoltOffset(uint8_t ch , int32_t v)
+{	
+	EE_Write4((ch==1)? EE_CH_1_VOLT_OFFSET: EE_CH_2_VOLT_OFFSET, v);
+}
+
+/* ============================================= */
+static int Cmd_VoltOffset(const char *argument, CmdResponse *resp)
+{
+	uint8_t ch;
+	int32_t offset;
+	
+	argument = CP_SkipSpace(argument);	
+	if ( strncmp("sec", argument, 3) == 0 ) {
+		ch = 2;
+	} else if ( strncmp("pri", argument, 3) == 0) {
+		ch = 1;
+	} else  {
+		return -1;
+	}
+	argument = CP_SkipChars(argument);	
+	argument = CP_SkipSpace(argument);	
+
+	if ( *argument ) {
+		offset = atol(argument);
+		Write_PowerCH_VoltOffset(ch, offset);
+		PowerChan_SetVoltOffset((ch==1)? Pri_CH: Sec_CH, offset);
+	} 
+	
+	offset = Read_PowerCH_VoltOffset(ch);
+	sprintf(resp->buffer,"Volt Offset %s: %ld\r\n", (ch == 2)?"Sec":"Pri", offset);	
 	return 0;	
 }
 
@@ -195,6 +236,7 @@ static const CmdTable SystemCommands[] = {
 	{ "raw",		Cmd_VoltageRaw		},
 	{ "craw",		Cmd_CurrentRaw		},
 	{ "calib",		Cmd_VoltCalib		},
+	{ "offset",		Cmd_VoltOffset		},
 	{ "ver",		Cmd_Version			},
 	{ NULL,			NULL				}
 };
@@ -263,12 +305,15 @@ int main (void)
 	
 	DataFlash_Init(SPI, PIO_PA17);
 	Pri_CH = PowerChan_Init(SPI, PIO_PA16, &SPI_DEVICE_EXAMPLE);
-	PowerChan_SetVoltCalib(Pri_CH, Read_PowerCH_VoltCalibration(1));
 	Sec_CH = PowerChan_Init(SPI, PIO_PA15, &SPI_DEVICE_EXAMPLE);
-	PowerChan_SetVoltCalib(Sec_CH, Read_PowerCH_VoltCalibration(2));
 
 	DFS_ReadChipID();
 	EE_Init( &EE_Token, 4);
+
+	PowerChan_SetVoltCalib(Pri_CH, Read_PowerCH_VoltCalibration(1));
+	PowerChan_SetVoltOffset(Pri_CH, Read_PowerCH_VoltOffset(1));
+	PowerChan_SetVoltCalib(Sec_CH, Read_PowerCH_VoltCalibration(2));
+	PowerChan_SetVoltOffset(Sec_CH, Read_PowerCH_VoltOffset(2));
 
 	UartBuffer_PutString("\r\nSystem Startup\r\n");
 	while ( 1 )
