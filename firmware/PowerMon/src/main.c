@@ -315,7 +315,10 @@ int main (void)
 	PowerChan_SetVoltCalib(Sec_CH, Read_PowerCH_VoltCalibration(2));
 	PowerChan_SetVoltOffset(Sec_CH, Read_PowerCH_VoltOffset(2));
 
+	Syslog_Init(lDiag, UartBuffer_PutString);
+
 	UartBuffer_PutString("\r\nSystem Startup\r\n");
+	Syslog(lDiag, "MAIN", "Start up" );
 	while ( 1 )
 	{
 		Hearbeat_Run();
