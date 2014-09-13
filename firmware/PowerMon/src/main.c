@@ -75,7 +75,7 @@ static int Cmd_Current(const char *argument, CmdResponse *resp)
 		return -1;
 	}
 	
-	sprintf(resp->buffer,"Current %s: %ld mA\r\n", (ch == 2)?"Sec":"Pri", PowerChan_GetCurrent((ch==2)?Sec_CH:Pri_CH));
+	sprintf(resp->buffer,"Current: %s %ld mA\r\n", (ch == 2)?"Sec":"Pri", PowerChan_GetCurrent((ch==2)?Sec_CH:Pri_CH));
 	return 0;
 }
 
@@ -94,7 +94,7 @@ static int Cmd_Voltage(const char *argument, CmdResponse *resp)
 		return -1;
 	}
 	
-	sprintf(resp->buffer,"Voltage %s: %lu mV\r\n", (ch == 2)?"Sec":"Pri", PowerChan_GetVolts((ch==2)?Sec_CH:Pri_CH));
+	sprintf(resp->buffer,"Voltage: %s %lu mV\r\n", (ch == 2)?"Sec":"Pri", PowerChan_GetVolts((ch==2)?Sec_CH:Pri_CH));
 	return 0;
 }
 
@@ -115,7 +115,7 @@ static int Cmd_VoltageRaw(const char *argument, CmdResponse *resp)
 	}
 	
 	v = PowerChan_GetVoltsRaw((ch==2)?Sec_CH:Pri_CH);
-	sprintf(resp->buffer,"Voltage %s: %08lX, %ld\r\n", (ch == 2)?"Sec":"Pri", v, v);
+	sprintf(resp->buffer,"RawV: %s %08lX, %ld\r\n", (ch == 2)?"Sec":"Pri", v, v);
 	return 0;
 }
 
@@ -134,7 +134,7 @@ static int Cmd_CurrentRaw(const char *argument, CmdResponse *resp)
 		return -1;
 	}
 	
-	sprintf(resp->buffer,"Current %s: %08lX\r\n", (ch == 2)?"Sec":"Pri", PowerChan_GetCurrent((ch==2)?Sec_CH:Pri_CH));
+	sprintf(resp->buffer,"RawC: %s %08lX\r\n", (ch == 2)?"Sec":"Pri", PowerChan_GetCurrent((ch==2)?Sec_CH:Pri_CH));
 	return 0;
 }
 
@@ -233,8 +233,8 @@ static const CmdTable SystemCommands[] = {
 	{ "restart",	Cmd_Restart			},
 	{ "current",	Cmd_Current			},
 	{ "volt",		Cmd_Voltage			},
-	{ "raw",		Cmd_VoltageRaw		},
-	{ "craw",		Cmd_CurrentRaw		},
+	{ "rawv",		Cmd_VoltageRaw		},
+	{ "rawc",		Cmd_CurrentRaw		},
 	{ "calib",		Cmd_VoltCalib		},
 	{ "offset",		Cmd_VoltOffset		},
 	{ "ver",		Cmd_Version			},
@@ -264,7 +264,7 @@ static void Run_Config(void)
 {
 	while ( UartBuffer_RxReady() ) {
 		uint8_t c = UartBuffer_GetChar();
-		UartBuffer_PutChar(c);
+//		UartBuffer_PutChar(c);
 		if ( c == '\r' || c == '\n' ) {
 			if ( RxSize ) {
 				UartBuffer_PutChar('\n');			
@@ -328,11 +328,11 @@ int main (void)
 		
 		if ( Is_10ms() ) {
 			EE_Cache_Check();			
+			PowerChan_Run(Pri_CH);
+			PowerChan_Run(Sec_CH);
 		}
 		if ( Is_1s() ) 	{
 			wdt_restart( WDT);
-			PowerChan_Run(Pri_CH);
-			PowerChan_Run(Sec_CH);
 			if ( state ) {
 				PIOA->PIO_SODR = PIO_PA8;
 				PIOA->PIO_CODR = PIO_PA9;
