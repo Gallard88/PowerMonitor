@@ -328,11 +328,11 @@ int main (void)
 		
 		if ( Is_10ms() ) {
 			EE_Cache_Check();			
-			PowerChan_Run(Pri_CH);
-			PowerChan_Run(Sec_CH);
 		}
 		if ( Is_1s() ) 	{
 			wdt_restart( WDT);
+			PowerChan_Run(Pri_CH);
+			PowerChan_Run(Sec_CH);
 			if ( state ) {
 				PIOA->PIO_SODR = PIO_PA8;
 				PIOA->PIO_CODR = PIO_PA9;
