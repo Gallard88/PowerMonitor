@@ -34,8 +34,8 @@ void UartBuffer_Init(void)
 	usart_disable_interrupt(USART0, ALL_INTERRUPT_MASK);
 	usart_enable_tx(USART0);
 	usart_enable_rx(USART0);
+	usart_enable_interrupt(USART0, US_IER_RXRDY);
 	NVIC_EnableIRQ(USART0_IRQn);
-
 
 	TxIn = TxOut = 0;
 	RxIn = RxOut = 0;
