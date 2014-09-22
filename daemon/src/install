@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "Installing Power Monitor"
+make install
+install PowerMonitor.sh /etc/init.d
+update-rc.d PowerMonitor.sh defaults 98 02
+
+

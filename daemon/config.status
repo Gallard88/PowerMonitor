@@ -437,11 +437,11 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/thomas/projects/PowerMonitor/daemon'
+ac_pwd='/home/pi/PowerMonitor/daemon'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 MKDIR_P='/bin/mkdir -p'
-AWK='gawk'
+AWK='mawk'
 test -n "$AWK" || AWK=awk
 # The default lists apply if the user does not specify any file.
 ac_need_defaults=:
@@ -637,26 +637,22 @@ S["CPPFLAGS"]=""
 S["LDFLAGS"]=""
 S["CFLAGS"]="-g -O2"
 S["CC"]="gcc"
-S["AM_BACKSLASH"]="\\"
-S["AM_DEFAULT_VERBOSITY"]="1"
-S["AM_DEFAULT_V"]="$(AM_DEFAULT_VERBOSITY)"
-S["AM_V"]="$(V)"
 S["am__untar"]="$${TAR-tar} xf -"
 S["am__tar"]="$${TAR-tar} chof - \"$$tardir\""
 S["AMTAR"]="$${TAR-tar}"
 S["am__leading_dot"]="."
 S["SET_MAKE"]=""
-S["AWK"]="gawk"
-S["mkdir_p"]="$(MKDIR_P)"
+S["AWK"]="mawk"
+S["mkdir_p"]="/bin/mkdir -p"
 S["MKDIR_P"]="/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]=""
-S["install_sh"]="${SHELL} /home/thomas/projects/PowerMonitor/daemon/install-sh"
-S["MAKEINFO"]="${SHELL} /home/thomas/projects/PowerMonitor/daemon/missing makeinfo"
-S["AUTOHEADER"]="${SHELL} /home/thomas/projects/PowerMonitor/daemon/missing autoheader"
-S["AUTOMAKE"]="${SHELL} /home/thomas/projects/PowerMonitor/daemon/missing automake-1.14"
-S["AUTOCONF"]="${SHELL} /home/thomas/projects/PowerMonitor/daemon/missing autoconf"
-S["ACLOCAL"]="${SHELL} /home/thomas/projects/PowerMonitor/daemon/missing aclocal-1.14"
+S["install_sh"]="${SHELL} /home/pi/PowerMonitor/daemon/install-sh"
+S["MAKEINFO"]="${SHELL} /home/pi/PowerMonitor/daemon/missing --run makeinfo"
+S["AUTOHEADER"]="${SHELL} /home/pi/PowerMonitor/daemon/missing --run autoheader"
+S["AUTOMAKE"]="${SHELL} /home/pi/PowerMonitor/daemon/missing --run automake-1.11"
+S["AUTOCONF"]="${SHELL} /home/pi/PowerMonitor/daemon/missing --run autoconf"
+S["ACLOCAL"]="${SHELL} /home/pi/PowerMonitor/daemon/missing --run aclocal-1.11"
 S["VERSION"]="1.0"
 S["PACKAGE"]="powermonitor"
 S["CYGPATH_W"]="echo"
@@ -1075,7 +1071,7 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
   case $ac_file$ac_mode in
     "depfiles":C) test x"$AMDEP_TRUE" != x"" || {
-  # Older Autoconf quotes --file arguments for eval, but not when files
+  # Autoconf 2.62 quotes --file arguments for eval, but not when files
   # are listed without --file.  Let's play safe and only enable the eval
   # if we detect the quoting.
   case $CONFIG_FILES in
@@ -1088,7 +1084,7 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
     # Strip MF so we end up with the name of the file.
     mf=`echo "$mf" | sed -e 's/:.*$//'`
     # Check whether this is an Automake generated Makefile or not.
-    # We used to match only the files named 'Makefile.in', but
+    # We used to match only the files named `Makefile.in', but
     # some people rename them; so instead we look at the file content.
     # Grep'ing the first line is not enough: some people post-process
     # each Makefile.in and add a new line on top of each file to say so.
@@ -1122,19 +1118,21 @@ $as_echo X"$mf" |
       continue
     fi
     # Extract the definition of DEPDIR, am__include, and am__quote
-    # from the Makefile without running 'make'.
+    # from the Makefile without running `make'.
     DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
     test -z "$DEPDIR" && continue
     am__include=`sed -n 's/^am__include = //p' < "$mf"`
-    test -z "$am__include" && continue
+    test -z "am__include" && continue
     am__quote=`sed -n 's/^am__quote = //p' < "$mf"`
+    # When using ansi2knr, U may be empty or an underscore; expand it
+    U=`sed -n 's/^U = //p' < "$mf"`
     # Find all dependency output files, they are included files with
     # $(DEPDIR) in their names.  We invoke sed twice because it is the
     # simplest approach to changing $(DEPDIR) to its actual value in the
     # expansion.
     for file in `sed -n "
       s/^$am__include $am__quote\(.*(DEPDIR).*\)$am__quote"'$/\1/p' <"$mf" | \
-	 sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g'`; do
+	 sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g' -e 's/\$U/'"$U"'/g'`; do
       # Make sure the directory exists.
       test -f "$dirpart/$file" && continue
       fdir=`$as_dirname -- "$file" ||

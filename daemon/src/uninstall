@@ -1,0 +1,6 @@
+#!/bin/bash
+
+update-rc.d -f PowerMonitor.sh remove
+rm /etc/init.d/PowerMonitor.sh
+
+make uninstall
