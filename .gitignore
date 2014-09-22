@@ -32,7 +32,8 @@
 *.i*86
 *.x86_64
 *.hex
-
+PM_Test
+PowerMonitor
 
 # http://www.gnu.org/software/automake
 */Makefile.in
