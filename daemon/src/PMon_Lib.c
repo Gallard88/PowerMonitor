@@ -81,6 +81,24 @@ float PMon_GetVoltage(PMon_t ptr, int ch)
 }
 
 // *****************
+int PMon_GetVoltages(PMon_t ptr, float *v1, float *v2)
+{
+  if ( ptr == NULL ) {
+    return -1;
+  }
+  pthread_mutex_lock( &ptr->access );
+  if ( v1 != NULL ) {
+    *v1 = ptr->voltage[0];
+  }
+  if ( v2 != NULL ) {
+    *v2 = ptr->voltage[1];
+  }
+  pthread_mutex_unlock( &ptr->access );
+
+  return 0;
+}
+
+// *****************
 float PMon_GetCurrent(PMon_t ptr, int ch)
 {
   float value;

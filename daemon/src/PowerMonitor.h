@@ -20,6 +20,7 @@ int PMon_isConnected(PMon_t ptr);
 
 // *****************
 float PMon_GetVoltage(PMon_t ptr, int ch);
+int PMon_GetVoltages(PMon_t ptr, float *v1, float *v2);
 
 // *****************
 float PMon_GetCurrent(PMon_t ptr, int ch);
